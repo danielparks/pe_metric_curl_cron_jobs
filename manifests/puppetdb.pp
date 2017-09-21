@@ -8,6 +8,7 @@ class pe_metric_curl_cron_jobs::puppetdb (
   Pe_metric_curl_cron_jobs::Pe_metric {
     output_dir     => $::pe_metric_curl_cron_jobs::output_dir,
     scripts_dir    => $::pe_metric_curl_cron_jobs::scripts_dir,
+    tidy_hour      => $::pe_metric_curl_cron_jobs::tidy_hour,
     cron_minute    => "*/${collection_frequency}",
     retention_days => $retention_days,
   }

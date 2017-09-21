@@ -19,6 +19,7 @@ class pe_metric_curl_cron_jobs (
   String        $activemq_metrics_ensure       = 'absent',
   Array[String] $activemq_hosts                = [ '127.0.0.1' ],
   Integer       $activemq_port                 = 8161,
+  String        $tidy_hour                     = '1',
 ) {
   $scripts_dir = "${base_dir}/scripts"
 

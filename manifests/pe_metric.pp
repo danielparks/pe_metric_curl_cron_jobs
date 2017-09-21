@@ -5,6 +5,7 @@ define pe_metric_curl_cron_jobs::pe_metric (
   Integer                   $metrics_port,
   String                    $metrics_type   = $title,
   Array[String]             $hosts          = [ '127.0.0.1' ],
+  String                    $tidy_hour      = '1',
   String                    $cron_minute    = '*/5',
   Integer                   $retention_days = 90,
   String                    $metric_script_file = 'tk_metrics',
@@ -80,7 +81,7 @@ define pe_metric_curl_cron_jobs::pe_metric (
   cron { "pe_metric_curl_cron_jobs: ${metrics_type}_metrics_tidy" :
     ensure  => $metric_ensure,
     user    => 'pe_metric_curl_cron_jobs',
-    hour    => fqdn_rand(3,  $metrics_type ),
+    hour    => $tidy_hour,
     minute  => (5 * fqdn_rand(11, $metrics_type )),
     command => $metrics_tidy_script_path
   }
