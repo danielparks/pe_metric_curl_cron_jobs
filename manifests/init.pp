@@ -3,7 +3,8 @@ class pe_metric_curl_cron_jobs (
   Optional[String]        $puppet_server_metrics_ensure  = undef,
   Optional[Array[String]] $puppet_server_hosts           = undef,
   # CURRENT API =================================
-  String        $output_dir                    = '/opt/puppetlabs/pe_metric_curl_cron_jobs',
+  String        $base_dir                      = '/opt/puppetlabs/pe_metric_curl_cron_jobs',
+  String        $output_dir                    = "${base_dir}/output",
   Integer       $collection_frequency          = 5,
   Integer       $retention_days                = 90,
   String        $puppetserver_metrics_ensure   = pick($pe_metric_curl_cron_jobs::puppet_server_metrics_ensure, 'present'),
@@ -19,16 +20,36 @@ class pe_metric_curl_cron_jobs (
   Array[String] $activemq_hosts                = [ '127.0.0.1' ],
   Integer       $activemq_port                 = 8161,
 ) {
-  $scripts_dir = "${output_dir}/scripts"
+  $scripts_dir = "${base_dir}/scripts"
 
-  file { [ $output_dir, $scripts_dir ] :
-    ensure => directory,
+  user { 'pe_metric_curl_cron_jobs':
+    ensure     => present,
+    home       => $output_dir,
+    managehome => false,
+    system     => true,
+    shell      => '/sbin/nologin',
   }
 
-  file { "${scripts_dir}/tk_metrics" :
-    ensure  => present,
-    mode    => '0744',
-    source  => 'puppet:///modules/pe_metric_curl_cron_jobs/tk_metrics'
+  file {
+    [$base_dir, $scripts_dir]:
+      ensure => directory,
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0555',
+    ;
+    "${scripts_dir}/tk_metrics" :
+      ensure => file,
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0555',
+      source => 'puppet:///modules/pe_metric_curl_cron_jobs/tk_metrics',
+    ;
+    $output_dir:
+      ensure => directory,
+      owner  => 'pe_metric_curl_cron_jobs',
+      group  => 'pe_metric_curl_cron_jobs',
+      mode   => '0755',
+    ;
   }
 
   include pe_metric_curl_cron_jobs::puppetserver
